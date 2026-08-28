@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<style>
+  html, body { margin: 0; padding: 0; background: transparent; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1024" height="1024"></canvas>
+<script>
+  const ctx = document.getElementById('c').getContext('2d');
+  const S = 1024;
+
+  function roundedRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  // Background tile — dark navy, matching the sidebar/brand-mark zone,
+  // with a soft radial highlight for a touch of neumorphic depth.
+  const pad = 48;
+  roundedRect(pad, pad, S - pad * 2, S - pad * 2, 220);
+  const bgGrad = ctx.createLinearGradient(pad, pad, S - pad, S - pad);
+  bgGrad.addColorStop(0, '#1b1c3a');
+  bgGrad.addColorStop(1, '#100f24');
+  ctx.fillStyle = bgGrad;
+  ctx.fill();
+
+  const highlight = ctx.createRadialGradient(S * 0.36, S * 0.32, 40, S * 0.36, S * 0.32, S * 0.7);
+  highlight.addColorStop(0, 'rgba(108,92,231,0.35)');
+  highlight.addColorStop(1, 'rgba(108,92,231,0)');
+  roundedRect(pad, pad, S - pad * 2, S - pad * 2, 220);
+  ctx.fillStyle = highlight;
+  ctx.fill();
+
+  // Three macro-colored dots arranged like a tiny progress cluster —
+  // echoes the indigo/orange/green palette used across the app's charts.
+  const dotY = S * 0.315;
+  const dots = [
+    { x: S * 0.365, color: '#6c5ce7' },
+    { x: S * 0.5, color: '#f5883d' },
+    { x: S * 0.635, color: '#22c55e' },
+  ];
+  dots.forEach((d) => {
+    ctx.beginPath();
+    ctx.arc(d.x, dotY, 26, 0, Math.PI * 2);
+    ctx.fillStyle = d.color;
+    ctx.fill();
+  });
+
+  // Bold checkmark — same motif as the sidebar brand-mark, in a
+  // indigo-to-green gradient stroke so it reads clearly at small sizes.
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = 64;
+  const checkGrad = ctx.createLinearGradient(S * 0.3, S * 0.55, S * 0.72, S * 0.72);
+  checkGrad.addColorStop(0, '#8b7bf0');
+  checkGrad.addColorStop(1, '#3fd67a');
+  ctx.strokeStyle = checkGrad;
+  ctx.beginPath();
+  ctx.moveTo(S * 0.315, S * 0.62);
+  ctx.lineTo(S * 0.46, S * 0.75);
+  ctx.lineTo(S * 0.71, S * 0.46);
+  ctx.stroke();
+
+  window.__done = true;
+</script>
+</body>
+</html>

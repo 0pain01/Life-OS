@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; worker-src 'self'; img-src 'self' data: blob:;" />
+<title>Daybook</title>
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12l2.5 2.5L16 9"/></svg>
+      </span>
+      <span class="brand-name">Daybook</span>
+    </div>
+    <button class="nav-item active" data-view="dashboard">
+      <span class="nav-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg></span> Today
+    </button>
+    <button class="nav-item" data-view="tasks">
+      <span class="nav-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l2.5 2.5L16 9"/></svg></span> Tasks
+    </button>
+    <button class="nav-item" data-view="nutrition">
+      <span class="nav-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.2 15.9A10 10 0 118 2.8"/><path d="M22 12A10 10 0 0012 2v10z"/></svg></span> Nutrition
+    </button>
+    <button class="nav-item" data-view="reports">
+      <span class="nav-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="9"/><line x1="18" y1="20" x2="18" y2="4"/></svg></span> Reports
+    </button>
+    <div class="nav-spacer"></div>
+    <button class="nav-item" data-view="settings">
+      <span class="nav-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span> Settings
+    </button>
+  </nav>
+
+  <main class="content">
+
+    <!-- DASHBOARD -->
+    <section class="view" id="view-dashboard">
+      <div class="hero-banner">
+        <div>
+          <h1 id="dashboard-date-heading">Today</h1>
+          <p class="subtitle" id="dashboard-date-sub"></p>
+        </div>
+        <div class="hero-stat-row" id="dashboard-hero-stats"></div>
+      </div>
+      <div class="dashboard-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Tasks due today</h2>
+            <button class="btn-link" data-view-link="tasks">View all →</button>
+          </div>
+          <div id="dashboard-tasks" class="task-list"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <h2><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>Overdue</h2>
+          </div>
+          <div id="dashboard-overdue" class="task-list"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Nutrition today</h2>
+            <button class="btn-link" data-view-link="nutrition">Log food →</button>
+          </div>
+          <div class="donut-wrap">
+            <canvas id="dashboard-donut" data-height="130"></canvas>
+            <div id="dashboard-donut-legend" class="donut-legend"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TASKS -->
+    <section class="view hidden" id="view-tasks">
+      <header class="view-header">
+        <h1>Tasks</h1>
+        <div class="header-actions">
+          <select id="task-filter-project" class="select"></select>
+          <label class="checkbox-inline">
+            <input type="checkbox" id="task-filter-hide-completed" checked />
+            Hide completed
+          </label>
+          <button class="btn-primary" id="btn-new-task">+ New Task</button>
+        </div>
+      </header>
+      <div id="task-list" class="task-list task-list-full"></div>
+    </section>
+
+    <!-- NUTRITION -->
+    <section class="view hidden" id="view-nutrition">
+      <header class="view-header">
+        <h1>Nutrition</h1>
+        <div class="header-actions">
+          <input type="date" id="nutrition-date" class="select" />
+          <button class="btn-primary" id="btn-log-food">+ Log Food</button>
+        </div>
+      </header>
+      <div class="nutrition-grid">
+        <div>
+          <div class="panel">
+            <div class="panel-header"><h2>Today's macros</h2></div>
+            <div class="donut-wrap">
+              <canvas id="nutrition-donut" data-height="150"></canvas>
+              <div id="nutrition-donut-legend" class="donut-legend"></div>
+            </div>
+            <div id="nutrition-progress" class="progress-list" style="margin-top: 16px;"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><h2>🎯 Goals</h2></div>
+            <div class="goals-grid">
+              <div class="goal-card calories">
+                <label>Calories
+                  <input type="number" id="goal-calories" min="0" />
+                  <span class="unit">kcal / day</span>
+                </label>
+              </div>
+              <div class="goal-card protein">
+                <label>Protein
+                  <input type="number" id="goal-protein" min="0" />
+                  <span class="unit">g / day</span>
+                </label>
+              </div>
+              <div class="goal-card fat">
+                <label>Fat
+                  <input type="number" id="goal-fat" min="0" />
+                  <span class="unit">g / day</span>
+                </label>
+              </div>
+              <div class="goal-card carbs">
+                <label>Carbs
+                  <input type="number" id="goal-carbs" min="0" />
+                  <span class="unit">g / day</span>
+                </label>
+              </div>
+            </div>
+            <button class="btn-secondary" id="btn-save-goals" style="margin-top: 12px;">Save goals</button>
+          </div>
+        </div>
+        <div>
+          <div class="panel panel-wide">
+            <div class="panel-header"><h2>Food log</h2></div>
+            <div id="nutrition-log" class="food-log-list"></div>
+          </div>
+          <div class="panel panel-wide">
+            <div class="panel-header">
+              <h2>Trends</h2>
+              <div class="segmented" id="nutrition-trend-range">
+                <button class="segmented-btn" data-range="day">Day</button>
+                <button class="segmented-btn active" data-range="week">Week</button>
+                <button class="segmented-btn" data-range="month">Month</button>
+                <button class="segmented-btn" data-range="year">Year</button>
+              </div>
+            </div>
+            <div class="trend-metric-tabs" id="nutrition-trend-metrics"></div>
+            <canvas id="nutrition-trend-canvas" data-height="200" style="margin-top: 10px;"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section class="view hidden" id="view-reports">
+      <header class="view-header">
+        <h1>Reports</h1>
+        <div class="header-actions">
+          <div class="segmented" id="report-range">
+            <button class="segmented-btn" data-range="day">Day</button>
+            <button class="segmented-btn active" data-range="week">Week</button>
+            <button class="segmented-btn" data-range="month">Month</button>
+            <button class="segmented-btn" data-range="year">Year</button>
+          </div>
+        </div>
+      </header>
+      <div class="panel">
+        <div class="panel-header"><h2 id="report-title">This week</h2></div>
+        <div class="trend-metric-tabs" id="report-metrics"></div>
+        <canvas id="report-canvas" data-height="220" style="margin-top: 10px;"></canvas>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h2>Averages</h2></div>
+        <div id="report-averages" class="progress-list"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h2 id="report-calendar-title">Calendar</h2>
+          <div class="calendar-nav">
+            <button class="icon-btn" id="cal-prev-month" aria-label="Previous month">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+            </button>
+            <span id="cal-month-label" class="calendar-month-label"></span>
+            <button class="icon-btn" id="cal-next-month" aria-label="Next month">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
+            <button class="btn-secondary" id="cal-today-btn">Today</button>
+          </div>
+        </div>
+        <div class="calendar-weekdays" id="report-calendar-weekdays"></div>
+        <div class="calendar-grid" id="report-calendar-grid"></div>
+        <div class="calendar-day-detail" id="report-calendar-detail"></div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view hidden" id="view-settings">
+      <header class="view-header">
+        <h1>Settings</h1>
+      </header>
+      <div class="panel">
+        <div class="panel-header"><h2>Reminders</h2></div>
+        <div class="settings-form">
+          <label class="checkbox-inline">
+            <input type="checkbox" id="set-reminders-enabled" />
+            Enable desktop reminders
+          </label>
+          <label>Default reminder lead time (minutes before due)
+            <input type="number" id="set-default-reminder" min="0" />
+          </label>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h2>Nutrition data source</h2></div>
+        <div class="settings-form">
+          <p class="hint">
+            Food search always checks a built-in catalog of common home-style Indian dishes (dal, roti,
+            biryani, idli, sambar, etc.) plus <span class="mono">Open Food Facts</span> — a free, global,
+            crowd-sourced product database with good coverage of Indian brands (Amul, Britannia,
+            Haldiram's, MTR, Parle, and more). No API key needed for either.
+          </p>
+          <label>Gemini API key (optional)
+            <input type="text" id="set-gemini-key" placeholder="AIzaSy…  — from aistudio.google.com/apikey" />
+          </label>
+          <p class="hint">
+            When set, search tries Gemini first (with Google Search grounding, so answers cite live
+            results rather than the model's memory) before falling back to Open Food Facts — useful for
+            dishes and regional/branded items OFF doesn't carry. Gemini automatically cascades across
+            several model tiers as each one's free daily quota runs out. Results from Gemini are marked
+            <span class="mono">AI ESTIMATE</span> in search — review them, since even a grounded model can
+            get a number wrong, unlike Open Food Facts' sourced product data.
+          </p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h2>Projects</h2></div>
+        <div id="settings-projects" class="project-list"></div>
+        <div class="settings-form inline">
+          <input type="text" id="new-project-name" placeholder="New project name" />
+          <input type="color" id="new-project-color" value="#6b7f6b" />
+          <button class="btn-secondary" id="btn-add-project">Add</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h2>Custom Foods</h2></div>
+        <p class="hint">Foods you add by hand from the food log's "Add a custom food" section — edit or remove them here.</p>
+        <div id="settings-custom-foods" class="project-list"></div>
+      </div>
+      <button class="btn-primary" id="btn-save-settings">Save settings</button>
+    </section>
+
+  </main>
+</div>
+
+<!-- Task modal -->
+<div class="modal-backdrop hidden" id="task-modal-backdrop">
+  <div class="modal">
+    <h2 id="task-modal-title">New Task</h2>
+    <form id="task-form">
+      <label>Title<input type="text" id="tf-title" required /></label>
+      <label>Notes<textarea id="tf-notes" rows="2"></textarea></label>
+      <div class="form-row">
+        <label>Project
+          <div class="project-select-row">
+            <select id="tf-project"></select>
+            <button type="button" class="icon-btn" id="tf-add-project-btn" title="New project">+</button>
+          </div>
+        </label>
+        <label>Priority
+          <select id="tf-priority">
+            <option value="-1">Low</option>
+            <option value="0" selected>Normal</option>
+            <option value="1">High</option>
+          </select>
+        </label>
+      </div>
+      <div class="inline-add-project hidden" id="tf-new-project-row">
+        <input type="text" id="tf-new-project-name" placeholder="New project name" />
+        <input type="color" id="tf-new-project-color" value="#6b7f6b" />
+        <button type="button" class="btn-secondary" id="tf-new-project-save">Add</button>
+        <button type="button" class="btn-link" id="tf-new-project-cancel">Cancel</button>
+      </div>
+      <div class="form-row">
+        <label>Due date<input type="date" id="tf-due-date" /></label>
+        <label>Due time<input type="time" id="tf-due-time" /></label>
+      </div>
+      <div class="form-row">
+        <label>Repeats
+          <select id="tf-recurrence">
+            <option value="none">Does not repeat</option>
+            <option value="daily">Daily</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </label>
+        <label>Every
+          <input type="number" id="tf-interval" min="1" value="1" />
+        </label>
+      </div>
+      <label class="checkbox-inline">
+        <input type="checkbox" id="tf-reminder-toggle" />
+        Remind me before it's due
+      </label>
+      <label id="tf-reminder-minutes-wrap" class="hidden">
+        Minutes before
+        <input type="number" id="tf-reminder-minutes" min="0" value="30" />
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="btn-cancel-task">Cancel</button>
+        <button type="submit" class="btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Food log modal -->
+<div class="modal-backdrop hidden" id="food-modal-backdrop">
+  <div class="modal">
+    <h2 id="food-modal-title">Log Food</h2>
+    <div id="food-modal-search-section">
+      <div class="food-search-row">
+        <input type="text" id="food-search-input" placeholder="Search a food, e.g. 'dal' or 'paneer butter masala'" />
+        <button class="btn-secondary" id="btn-food-search">Search</button>
+      </div>
+      <div class="photo-search-row">
+        <button type="button" class="btn-secondary" id="btn-photo-file" title="Search using a photo of the package">📁 Search by photo</button>
+        <button type="button" class="btn-secondary" id="btn-photo-camera" title="Take a photo of the package to search">📷 Take photo</button>
+        <input type="file" id="package-photo-input" accept="image/*" class="hidden" />
+      </div>
+      <div id="photo-capture-wrap" class="hidden">
+        <div id="photo-capture-reader"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn-primary" id="btn-capture-shot">📸 Capture</button>
+          <button type="button" class="btn-secondary" id="btn-cancel-photo-capture">Cancel</button>
+        </div>
+      </div>
+      <div class="manual-barcode-row">
+        <input type="text" id="barcode-manual-input" placeholder="Or type a barcode number — no camera needed" inputmode="numeric" />
+        <button type="button" class="btn-secondary" id="btn-manual-barcode-lookup">Look up</button>
+      </div>
+      <div id="food-search-status" class="hint"></div>
+      <div id="food-search-results" class="food-results"></div>
+    </div>
+
+    <div id="food-log-form" class="hidden">
+      <h3 id="flf-name"></h3>
+      <div class="form-row">
+        <label>Meal
+          <select id="flf-meal">
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+            <option value="snack" selected>Snack</option>
+          </select>
+        </label>
+        <label>Servings
+          <input type="number" id="flf-quantity" min="0.1" step="0.1" value="1" />
+        </label>
+        <label>Serving size (<span id="flf-unit">g</span>)
+          <input type="number" id="flf-serving-size" min="1" step="1" />
+        </label>
+      </div>
+      <div id="flf-macro-preview" class="macro-preview"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="btn-cancel-food">Cancel</button>
+        <button type="button" class="btn-primary" id="btn-confirm-food-log">Add to log</button>
+      </div>
+    </div>
+
+    <details class="custom-food-toggle" id="custom-food-toggle">
+      <summary>Can't find it? Add a custom food</summary>
+      <div class="form-row">
+        <label>Name<input type="text" id="cf-name" /></label>
+        <label>Brand<input type="text" id="cf-brand" /></label>
+      </div>
+      <p class="hint">Photograph the nutrition facts panel (usually on the back) to auto-fill the values below:</p>
+      <div class="photo-search-row">
+        <button type="button" class="btn-secondary" id="btn-cf-photo-file">📁 Choose label photo</button>
+        <button type="button" class="btn-secondary" id="btn-cf-photo-camera">📷 Take photo of label</button>
+        <input type="file" id="cf-photo-input" accept="image/*" class="hidden" />
+      </div>
+      <div id="cf-ocr-status" class="hint"></div>
+      <div class="form-row">
+        <label>Calories / 100g<input type="number" id="cf-calories" min="0" /></label>
+        <label>Protein / 100g<input type="number" id="cf-protein" min="0" /></label>
+      </div>
+      <div class="form-row">
+        <label>Fat / 100g<input type="number" id="cf-fat" min="0" /></label>
+        <label>Carbs / 100g<input type="number" id="cf-carbs" min="0" /></label>
+      </div>
+      <p class="hint">Optional, if known:</p>
+      <div class="form-row">
+        <label>Saturated fat / 100g<input type="number" id="cf-satfat" min="0" /></label>
+        <label>Sugar / 100g<input type="number" id="cf-sugar" min="0" /></label>
+      </div>
+      <div class="form-row">
+        <label>Fiber / 100g<input type="number" id="cf-fiber" min="0" /></label>
+        <label>Sodium / 100g (mg)<input type="number" id="cf-sodium" min="0" /></label>
+      </div>
+      <button class="btn-secondary" id="btn-add-custom-food">Add custom food</button>
+    </details>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="btn-close-food-modal">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit custom food modal (Settings) -->
+<div class="modal-backdrop hidden" id="edit-custom-food-modal-backdrop">
+  <div class="modal">
+    <h2>Edit Custom Food</h2>
+    <div class="form-row">
+      <label>Name<input type="text" id="ecf-name" /></label>
+      <label>Brand<input type="text" id="ecf-brand" /></label>
+    </div>
+    <div class="form-row">
+      <label>Calories / 100g<input type="number" id="ecf-calories" min="0" /></label>
+      <label>Protein / 100g<input type="number" id="ecf-protein" min="0" /></label>
+    </div>
+    <div class="form-row">
+      <label>Fat / 100g<input type="number" id="ecf-fat" min="0" /></label>
+      <label>Carbs / 100g<input type="number" id="ecf-carbs" min="0" /></label>
+    </div>
+    <p class="hint">Optional, if known:</p>
+    <div class="form-row">
+      <label>Saturated fat / 100g<input type="number" id="ecf-satfat" min="0" /></label>
+      <label>Sugar / 100g<input type="number" id="ecf-sugar" min="0" /></label>
+    </div>
+    <div class="form-row">
+      <label>Fiber / 100g<input type="number" id="ecf-fiber" min="0" /></label>
+      <label>Sodium / 100g (mg)<input type="number" id="ecf-sodium" min="0" /></label>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="btn-cancel-custom-food-edit">Cancel</button>
+      <button type="button" class="btn-primary" id="btn-save-custom-food-edit">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="js/utils.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/nutritionShared.js"></script>
+<script src="js/vendor/tesseract/tesseract.min.js"></script>
+<script src="js/ocr.js"></script>
+<script src="js/views/dashboard.js"></script>
+<script src="js/views/tasks.js"></script>
+<script src="js/views/nutrition.js"></script>
+<script src="js/views/reports.js"></script>
+<script src="js/views/settings.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
