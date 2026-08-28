@@ -1,4 +1,4 @@
-# Daybook
+# Life OS
 
 A neumorphic ("soft UI") Windows desktop app that combines **task
 management** (with recurring reminders and projects) and **nutrition
@@ -80,7 +80,7 @@ empty, add it as a custom food and it's saved locally for next time.
 
 ## Installing and running it
 
-**Prerequisites:** [Node.js](https://nodejs.org/) (LTS) and npm. Daybook is
+**Prerequisites:** [Node.js](https://nodejs.org/) (LTS) and npm. Life OS is
 built and tested on Windows.
 
 ```bash
@@ -93,8 +93,10 @@ npm start
 `npm install` also rebuilds `better-sqlite3` for Electron's Node ABI via
 `electron-rebuild` (wired up as a `postinstall` script) — no extra step
 needed. Data is stored locally in a SQLite database under your Windows user
-profile (`%APPDATA%/Daybook/data/daybook.sqlite3`); nothing leaves your
-machine unless you opt into a Gemini API key in Settings.
+profile (`%APPDATA%/Daybook/data/daybook.sqlite3` — the folder keeps the
+app's original internal name, Daybook, so existing data stays put across
+any future rebrand); nothing leaves your machine unless you opt into a
+Gemini API key in Settings.
 
 ### Building a Windows executable
 
@@ -109,7 +111,7 @@ code-signing tooling it prepares by default even for a Windows-only build
 (`Cannot create symbolic link: A required privilege is not held by the
 client`) — this doesn't affect the app itself. If it happens, the fully
 packaged, runnable app is still available directly at
-`dist/win-unpacked/Daybook.exe`; either enable Developer Mode (Settings →
+`dist/win-unpacked/Life OS.exe`; either enable Developer Mode (Settings →
 Privacy & security → For developers) and rerun `npm run dist` for a proper
 installer, or just use the unpacked exe as a portable build.
 

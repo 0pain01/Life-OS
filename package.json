@@ -1,10 +1,10 @@
 {
-  "name": "daybook",
-  "productName": "Daybook",
+  "name": "life-os",
+  "productName": "Life OS",
   "version": "1.0.0",
   "description": "A notebook-style desktop app combining task management with recurring reminders and nutrition tracking.",
   "main": "electron/main.js",
-  "author": "Daybook",
+  "author": "Pankaj Singh",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -23,8 +23,8 @@
     "better-sqlite3": "^11.5.0"
   },
   "build": {
-    "appId": "com.daybook.app",
-    "productName": "Daybook",
+    "appId": "com.lifeos.app",
+    "productName": "Life OS",
     "files": [
       "electron/**/*",
       "renderer/**/*",

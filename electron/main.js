@@ -4,6 +4,13 @@ const db = require('./db');
 const reminders = require('./reminders');
 const nutritionApi = require('./nutritionApi');
 
+// Pins the userData path (and thus the SQLite DB location) to the app's
+// original internal name, independent of whatever product/display name
+// package.json carries. Without this, rebranding the app in package.json
+// would silently point Electron at a brand-new %APPDATA% folder and orphan
+// everyone's existing tasks and food logs, which live under the old name.
+app.setName('Daybook');
+
 let mainWindow;
 
 function createWindow() {
@@ -13,7 +20,7 @@ function createWindow() {
     minWidth: 860,
     minHeight: 560,
     backgroundColor: '#f6f3ec',
-    title: 'Daybook',
+    title: 'Life OS',
     icon: path.join(__dirname, '..', 'build', 'icon.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),

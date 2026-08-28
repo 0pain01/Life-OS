@@ -8,7 +8,7 @@
 const { searchFoodViaGemini } = require('./geminiNutritionApi');
 
 const OFF_BASE = 'https://world.openfoodfacts.org';
-const USER_AGENT = 'Daybook-DesktopApp/1.0 (local nutrition tracker)';
+const USER_AGENT = 'LifeOS-DesktopApp/1.0 (local nutrition tracker)';
 
 function per100FromOffProduct(p) {
   const n = p.nutriments || {};
