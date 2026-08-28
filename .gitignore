@@ -3,3 +3,10 @@ dist/
 *.log
 .DS_Store
 Thumbs.db
+
+# Local-only Claude Code guidance, not shared with the team
+CLAUDE.md
+CLAUDE.local.md
+
+# Claude Code session-runtime state, not project config
+.claude/scheduled_tasks.lock
