@@ -20,8 +20,8 @@ function todayStr() {
 
 /**
  * Given a due date and a recurrence rule, return the next due date string.
- * recurrence: 'none' | 'daily' | 'monthly' | 'yearly'
- * interval: positive integer, e.g. every 2 days/months/years (default 1)
+ * recurrence: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly'
+ * interval: positive integer, e.g. every 2 days/weeks/months/years (default 1)
  */
 function nextDueDate(dueDateStr, recurrence, interval = 1) {
   if (!dueDateStr || recurrence === 'none' || !recurrence) return null;
@@ -30,6 +30,10 @@ function nextDueDate(dueDateStr, recurrence, interval = 1) {
 
   if (recurrence === 'daily') {
     base.setDate(base.getDate() + n);
+    return formatDate(base);
+  }
+  if (recurrence === 'weekly') {
+    base.setDate(base.getDate() + n * 7);
     return formatDate(base);
   }
   if (recurrence === 'monthly') {

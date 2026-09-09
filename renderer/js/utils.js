@@ -52,7 +52,7 @@ function showToast(message, isError) {
 function recurrenceLabel(recurrence, interval) {
   if (!recurrence || recurrence === 'none') return null;
   const n = interval && interval > 1 ? interval : 1;
-  const unit = { daily: 'day', monthly: 'month', yearly: 'year' }[recurrence];
+  const unit = { daily: 'day', weekly: 'week', monthly: 'month', yearly: 'year' }[recurrence];
   if (!unit) return null;
   return n > 1 ? `Every ${n} ${unit}s` : `Every ${unit}`;
 }

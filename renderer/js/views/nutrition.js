@@ -322,6 +322,24 @@ const NutritionView = (() => {
     }
   }
 
+  function resetCustomFoodForm() {
+    ['cf-name', 'cf-brand', 'cf-calories', 'cf-protein', 'cf-fat', 'cf-carbs', 'cf-satfat', 'cf-sugar', 'cf-fiber', 'cf-sodium'].forEach((id) => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('cf-serving-unit').value = 'g';
+    document.getElementById('cf-basis-amount').value = 100;
+    document.getElementById('cf-basis-unit').textContent = 'g';
+    document.getElementById('cf-ocr-status').textContent = '';
+    document.getElementById('custom-food-toggle').removeAttribute('open');
+  }
+
+  // The user types nutrition values exactly as printed on whatever label
+  // they're looking at — "per 100g", "per 30g serving", "per 250ml can",
+  // whatever — rather than being forced to hand-convert to per-100 first.
+  // basisAmount/basisUnit describe what that entered figure is for; this
+  // rescales it to the per-100(g|ml) basis the foods table actually stores,
+  // and reuses the same basis amount as the food's default logged serving
+  // size so logging it later starts from the quantity the user meant.
   async function addCustomFood() {
     const name = document.getElementById('cf-name').value.trim();
     if (!name) {
@@ -332,21 +350,27 @@ const NutritionView = (() => {
       const v = document.getElementById(id).value;
       return v === '' ? null : Number(v);
     };
+    const servingUnit = document.getElementById('cf-serving-unit').value;
+    const basisAmount = Number(document.getElementById('cf-basis-amount').value) || 100;
+    const factor = 100 / basisAmount;
+    const per100 = (raw) => (raw == null ? null : round1(raw * factor));
+
     const food = await window.api.foods.createCustom({
       name,
       brand: document.getElementById('cf-brand').value.trim(),
-      serving_size: 100,
-      serving_unit: 'g',
-      calories_per_100: Number(document.getElementById('cf-calories').value) || 0,
-      protein_per_100: Number(document.getElementById('cf-protein').value) || 0,
-      fat_per_100: Number(document.getElementById('cf-fat').value) || 0,
-      carbs_per_100: Number(document.getElementById('cf-carbs').value) || 0,
-      saturated_fat_per_100: optional('cf-satfat'),
-      sugar_per_100: optional('cf-sugar'),
-      fiber_per_100: optional('cf-fiber'),
-      sodium_per_100: optional('cf-sodium'),
+      serving_size: basisAmount,
+      serving_unit: servingUnit,
+      calories_per_100: per100(Number(document.getElementById('cf-calories').value) || 0) || 0,
+      protein_per_100: per100(Number(document.getElementById('cf-protein').value) || 0) || 0,
+      fat_per_100: per100(Number(document.getElementById('cf-fat').value) || 0) || 0,
+      carbs_per_100: per100(Number(document.getElementById('cf-carbs').value) || 0) || 0,
+      saturated_fat_per_100: per100(optional('cf-satfat')),
+      sugar_per_100: per100(optional('cf-sugar')),
+      fiber_per_100: per100(optional('cf-fiber')),
+      sodium_per_100: per100(optional('cf-sodium')),
     });
     showToast('Custom food added.');
+    resetCustomFoodForm();
     selectFoodForLogging(food);
   }
 
@@ -442,7 +466,7 @@ const NutritionView = (() => {
     document.getElementById('food-search-status').textContent = '';
     document.getElementById('food-search-results').innerHTML = '';
     document.getElementById('food-log-form').classList.add('hidden');
-    document.getElementById('cf-ocr-status').textContent = '';
+    resetCustomFoodForm();
     selectedFood = null;
     editingLogEntry = null;
     document.getElementById('food-modal-backdrop').classList.remove('hidden');
@@ -516,6 +540,9 @@ const NutritionView = (() => {
     document.getElementById('flf-serving-size').addEventListener('input', updateMacroPreview);
     document.getElementById('btn-confirm-food-log').addEventListener('click', confirmLog);
     document.getElementById('btn-add-custom-food').addEventListener('click', addCustomFood);
+    document.getElementById('cf-serving-unit').addEventListener('change', (e) => {
+      document.getElementById('cf-basis-unit').textContent = e.target.value;
+    });
 
     document.getElementById('nutrition-log').addEventListener('click', async (e) => {
       const itemEl = e.target.closest('.food-log-item');

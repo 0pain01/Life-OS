@@ -144,20 +144,28 @@ async function lookupBarcode(barcode) {
  * so the UI can label them as AI-estimated rather than sourced product data.
  */
 async function searchFood(query, { geminiApiKey } = {}) {
+  let geminiError = null;
   if (geminiApiKey && geminiApiKey.trim()) {
     try {
       const results = await searchFoodViaGemini(query, geminiApiKey);
-      return { results, warnings: [] };
-    } catch {
-      // Fall through to Open Food Facts below — don't surface the Gemini
-      // failure as a warning when we're about to get real results anyway.
+      if (results.length > 0) return { results, warnings: [] };
+      // Gemini succeeded but found nothing for this query — fall through to
+      // Open Food Facts silently, same as before; this isn't a failure worth
+      // surfacing.
+    } catch (err) {
+      // Fall through to Open Food Facts below, but remember why Gemini
+      // didn't come through so the user isn't left guessing whether the AI
+      // search is working at all.
+      geminiError = err.message;
     }
   }
   try {
     const results = await searchOpenFoodFacts(query);
-    return { results, warnings: [] };
+    const warnings = geminiError ? [`AI search unavailable (${geminiError}) — showing Open Food Facts results instead`] : [];
+    return { results, warnings };
   } catch (err) {
-    return { results: [], warnings: [err.message] };
+    const warnings = geminiError ? [geminiError, err.message] : [err.message];
+    return { results: [], warnings };
   }
 }
 

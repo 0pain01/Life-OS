@@ -35,7 +35,7 @@ function migrate() {
       project_id INTEGER REFERENCES projects(id) ON DELETE SET NULL,
       due_date TEXT,                 -- 'YYYY-MM-DD' or NULL
       due_time TEXT,                 -- 'HH:MM' or NULL
-      recurrence TEXT NOT NULL DEFAULT 'none', -- none|daily|monthly|yearly
+      recurrence TEXT NOT NULL DEFAULT 'none', -- none|daily|weekly|monthly|yearly
       recurrence_interval INTEGER NOT NULL DEFAULT 1,
       reminder_minutes_before INTEGER, -- NULL = no reminder
       priority INTEGER NOT NULL DEFAULT 0, -- 0 normal, 1 high, -1 low
@@ -382,6 +382,8 @@ function updateFood(id, fields) {
     `UPDATE foods SET
       name = @name,
       brand = @brand,
+      serving_size = @serving_size,
+      serving_unit = @serving_unit,
       calories_per_100 = @calories_per_100,
       protein_per_100 = @protein_per_100,
       fat_per_100 = @fat_per_100,
@@ -395,6 +397,8 @@ function updateFood(id, fields) {
     id,
     name: merged.name,
     brand: merged.brand || '',
+    serving_size: merged.serving_size || 100,
+    serving_unit: merged.serving_unit || 'g',
     calories_per_100: merged.calories_per_100 || 0,
     protein_per_100: merged.protein_per_100 || 0,
     fat_per_100: merged.fat_per_100 || 0,

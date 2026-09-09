@@ -297,6 +297,7 @@
           <select id="tf-recurrence">
             <option value="none">Does not repeat</option>
             <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
             <option value="yearly">Yearly</option>
           </select>
@@ -361,11 +362,14 @@
             <option value="snack" selected>Snack</option>
           </select>
         </label>
-        <label>Servings
+        <label id="flf-row-servings">Servings
           <input type="number" id="flf-quantity" min="0.1" step="0.1" value="1" />
         </label>
-        <label>Serving size (<span id="flf-unit">g</span>)
-          <input type="number" id="flf-serving-size" min="1" step="1" />
+        <label id="flf-row-serving-size">Serving size
+          <div class="input-suffix">
+            <input type="number" id="flf-serving-size" min="1" step="1" />
+            <span id="flf-unit">g</span>
+          </div>
         </label>
       </div>
       <div id="flf-macro-preview" class="macro-preview"></div>
@@ -381,6 +385,21 @@
         <label>Name<input type="text" id="cf-name" /></label>
         <label>Brand<input type="text" id="cf-brand" /></label>
       </div>
+      <div class="form-row">
+        <label>Measured in
+          <select id="cf-serving-unit">
+            <option value="g">Grams (g)</option>
+            <option value="ml">Millilitres (ml)</option>
+          </select>
+        </label>
+        <label>Values below are per
+          <div class="input-suffix">
+            <input type="number" id="cf-basis-amount" min="1" step="1" value="100" />
+            <span id="cf-basis-unit">g</span>
+          </div>
+        </label>
+      </div>
+      <p class="hint">Enter the numbers exactly as printed on the label (per 100g, per 30g serving, per 250ml can — whatever it lists) — no need to convert them yourself.</p>
       <p class="hint">Photograph the nutrition facts panel (usually on the back) to auto-fill the values below:</p>
       <div class="photo-search-row">
         <button type="button" class="btn-secondary" id="btn-cf-photo-file">📁 Choose label photo</button>
@@ -389,21 +408,21 @@
       </div>
       <div id="cf-ocr-status" class="hint"></div>
       <div class="form-row">
-        <label>Calories / 100g<input type="number" id="cf-calories" min="0" /></label>
-        <label>Protein / 100g<input type="number" id="cf-protein" min="0" /></label>
+        <label>Calories<input type="number" id="cf-calories" min="0" /></label>
+        <label>Protein (g)<input type="number" id="cf-protein" min="0" /></label>
       </div>
       <div class="form-row">
-        <label>Fat / 100g<input type="number" id="cf-fat" min="0" /></label>
-        <label>Carbs / 100g<input type="number" id="cf-carbs" min="0" /></label>
+        <label>Fat (g)<input type="number" id="cf-fat" min="0" /></label>
+        <label>Carbs (g)<input type="number" id="cf-carbs" min="0" /></label>
       </div>
       <p class="hint">Optional, if known:</p>
       <div class="form-row">
-        <label>Saturated fat / 100g<input type="number" id="cf-satfat" min="0" /></label>
-        <label>Sugar / 100g<input type="number" id="cf-sugar" min="0" /></label>
+        <label>Saturated fat (g)<input type="number" id="cf-satfat" min="0" /></label>
+        <label>Sugar (g)<input type="number" id="cf-sugar" min="0" /></label>
       </div>
       <div class="form-row">
-        <label>Fiber / 100g<input type="number" id="cf-fiber" min="0" /></label>
-        <label>Sodium / 100g (mg)<input type="number" id="cf-sodium" min="0" /></label>
+        <label>Fiber (g)<input type="number" id="cf-fiber" min="0" /></label>
+        <label>Sodium (mg)<input type="number" id="cf-sodium" min="0" /></label>
       </div>
       <button class="btn-secondary" id="btn-add-custom-food">Add custom food</button>
     </details>
@@ -423,21 +442,36 @@
       <label>Brand<input type="text" id="ecf-brand" /></label>
     </div>
     <div class="form-row">
-      <label>Calories / 100g<input type="number" id="ecf-calories" min="0" /></label>
-      <label>Protein / 100g<input type="number" id="ecf-protein" min="0" /></label>
+      <label>Measured in
+        <select id="ecf-serving-unit">
+          <option value="g">Grams (g)</option>
+          <option value="ml">Millilitres (ml)</option>
+        </select>
+      </label>
+      <label>Default serving size
+        <div class="input-suffix">
+          <input type="number" id="ecf-serving-size" min="1" step="1" />
+          <span id="ecf-serving-size-unit">g</span>
+        </div>
+      </label>
+    </div>
+    <p class="hint">Values below are stored per 100g/100ml, as normalized when this food was added.</p>
+    <div class="form-row">
+      <label>Calories / 100<input type="number" id="ecf-calories" min="0" /></label>
+      <label>Protein / 100<input type="number" id="ecf-protein" min="0" /></label>
     </div>
     <div class="form-row">
-      <label>Fat / 100g<input type="number" id="ecf-fat" min="0" /></label>
-      <label>Carbs / 100g<input type="number" id="ecf-carbs" min="0" /></label>
+      <label>Fat / 100<input type="number" id="ecf-fat" min="0" /></label>
+      <label>Carbs / 100<input type="number" id="ecf-carbs" min="0" /></label>
     </div>
     <p class="hint">Optional, if known:</p>
     <div class="form-row">
-      <label>Saturated fat / 100g<input type="number" id="ecf-satfat" min="0" /></label>
-      <label>Sugar / 100g<input type="number" id="ecf-sugar" min="0" /></label>
+      <label>Saturated fat / 100<input type="number" id="ecf-satfat" min="0" /></label>
+      <label>Sugar / 100<input type="number" id="ecf-sugar" min="0" /></label>
     </div>
     <div class="form-row">
-      <label>Fiber / 100g<input type="number" id="ecf-fiber" min="0" /></label>
-      <label>Sodium / 100g (mg)<input type="number" id="ecf-sodium" min="0" /></label>
+      <label>Fiber / 100<input type="number" id="ecf-fiber" min="0" /></label>
+      <label>Sodium / 100 (mg)<input type="number" id="ecf-sodium" min="0" /></label>
     </div>
     <div class="modal-actions">
       <button type="button" class="btn-secondary" id="btn-cancel-custom-food-edit">Cancel</button>

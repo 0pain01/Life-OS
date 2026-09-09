@@ -486,7 +486,17 @@ textarea { resize: vertical; width: 100%; }
   display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; color: var(--ink-soft); font-weight: 700;
 }
 .form-row { display: flex; gap: 12px; }
-.form-row > label { flex: 1; }
+.form-row > label { flex: 1; min-width: 0; }
+.form-row > label input, .form-row > label select { width: 100%; min-width: 0; }
+.input-suffix { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.input-suffix input { flex: 1; min-width: 0; }
+.input-suffix span { font-size: 11.5px; color: var(--ink-soft); font-weight: 600; white-space: nowrap; }
+/* Number inputs default to a wide intrinsic size browsers won't shrink in a
+   flex row without min-width:0 above; "Servings" only ever holds a couple of
+   digits, so give it less of the row's width and let "Serving size" (which
+   also carries the g/ml suffix) take more. */
+#flf-row-servings { flex: 0.7; }
+#flf-row-serving-size { flex: 1.4; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
 
 .food-search-row { display: flex; gap: 8px; margin-bottom: 10px; }

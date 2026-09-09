@@ -50,7 +50,7 @@ const SettingsView = (() => {
     return `
       <div class="project-row" data-id="${f.id}">
         <span class="project-name">${escapeHtml(f.name)}${f.brand ? ` <span class="hint">· ${escapeHtml(f.brand)}</span>` : ''}</span>
-        <span class="hint">${round1(f.calories_per_100)} kcal/100g</span>
+        <span class="hint">${round1(f.calories_per_100)} kcal/100${f.serving_unit || 'g'}</span>
         <button class="btn-link" data-action="edit-custom-food">Edit</button>
         <button class="btn-danger" data-action="delete-custom-food">Delete</button>
       </div>`;
@@ -68,6 +68,9 @@ const SettingsView = (() => {
   function openCustomFoodEditModal(food) {
     document.getElementById('ecf-name').value = food.name;
     document.getElementById('ecf-brand').value = food.brand || '';
+    document.getElementById('ecf-serving-unit').value = food.serving_unit || 'g';
+    document.getElementById('ecf-serving-size').value = food.serving_size || 100;
+    document.getElementById('ecf-serving-size-unit').textContent = food.serving_unit || 'g';
     document.getElementById('ecf-calories').value = food.calories_per_100;
     document.getElementById('ecf-protein').value = food.protein_per_100;
     document.getElementById('ecf-fat').value = food.fat_per_100;
@@ -99,6 +102,8 @@ const SettingsView = (() => {
     await window.api.foods.update(id, {
       name,
       brand: document.getElementById('ecf-brand').value.trim(),
+      serving_unit: document.getElementById('ecf-serving-unit').value,
+      serving_size: Number(document.getElementById('ecf-serving-size').value) || 100,
       calories_per_100: Number(document.getElementById('ecf-calories').value) || 0,
       protein_per_100: Number(document.getElementById('ecf-protein').value) || 0,
       fat_per_100: Number(document.getElementById('ecf-fat').value) || 0,
@@ -140,6 +145,9 @@ const SettingsView = (() => {
           await renderCustomFoods();
         }
       }
+    });
+    document.getElementById('ecf-serving-unit').addEventListener('change', (e) => {
+      document.getElementById('ecf-serving-size-unit').textContent = e.target.value;
     });
     document.getElementById('btn-cancel-custom-food-edit').addEventListener('click', closeCustomFoodEditModal);
     document.getElementById('btn-save-custom-food-edit').addEventListener('click', saveCustomFoodEdit);
